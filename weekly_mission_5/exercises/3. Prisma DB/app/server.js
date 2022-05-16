@@ -6,7 +6,14 @@ const port = process.env.PORT || 3000;
 // Require para usar Prisma
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
-//const cors = require('cors');
+const cors = require('cors');
+
+const corsOptions = {
+	origin: "http://localhost:8081"
+}
+
+app.use(cors(corsOptions));
+
 
 app.get('/', (req, res) => {
   res.json({message: 'alive'});
@@ -74,9 +81,12 @@ res.json(mc);
 app.post('/msCommanders', async (req, res) => {
 const mc = {
     name: req.body.name,
-    username: req.body.username,
-    mission: req.body.mission
+    lang: req.body.lang,
+    enrollments: req.body.enrollments,
+    hasCertification: req.body.hasCertification,
+    missionCommander: req.body.missionCommander
     };
+
 const message = 'MC creado.';
 await prisma.missionCommander.create({data: mc});
 return res.json({message});
@@ -102,6 +112,7 @@ app.delete('/msCommanders/:id', async (req, res) => {
 	await prisma.missionCommander.delete({where: {id: id}});
 	return res.json({message: "Eliminado correctamente"});
 });
+
 
 app.listen(port, () => {
   console.log(`Listening to requests on port ${port}`);
